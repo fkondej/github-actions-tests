@@ -8,21 +8,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-1:
     runs-on: ubuntu-latest
     concurrency:
-      group: prod-env
+      group: prod2-env
       cancel-in-progress: false
     steps:
       - name: Run a one-line script
-        run: echo Hello, world!
+        run: |
+          echo Hello, world!
+          sleep 10
+
+  build-2:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: prod2-env
+      cancel-in-progress: false
+    steps:
+      - name: Run a one-line script
+        run: |
+          echo Hello, world!
+          sleep 10
 
   deploy:
     runs-on: ubuntu-latest
     concurrency:
-      group: prod-env
+      group: prod2-env
       cancel-in-progress: false
     environment: production
     steps:
       - name: Run a one-line script
-        run: deploying ....
+        run: |
+          echo deploying...
+          sleep 10
