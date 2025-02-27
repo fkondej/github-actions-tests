@@ -1,0 +1,56 @@
+name: Bitstream Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      tcl_file_1:
+        description: 'Select file for build 1 (required)'
+        required: true
+        default: 'file1'
+      build_count_1:
+        description: 'Number of builds for file1 (0-10)'
+        required: true
+        default: '1'
+      file2:
+        description: 'Select file for build 2 (optional)'
+        required: false
+      count2:
+        description: 'Number of builds for file2 (0-10, optional)'
+        required: false
+        default: '0'
+      file3:
+        description: 'Select file for build 3 (optional)'
+        required: false
+      count3:
+        description: 'Number of builds for file3 (0-10, optional)'
+        required: false
+        default: '0'
+  push:
+    branches:
+      - main
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    env:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+    steps:
+      - name: Generate matrix for build jobs
+        id: set-matrix
+        run: |
+          echo TCL_FILE_1=${TCL_FILE_1}
+          echo BUILD_COUNT_1=${BUILD_COUNT_1}
+          echo ${GITHUB_EVENT_NAME}
+          echo 'matrix={"include":[{"tcl_file": "file1.tcl", "build_no": 1}]}' >> $GITHUB_OUTPUT
+
+  build-bitstream:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+    steps:
+      - name: Build Bitstream
+        run: |
+          echo "Building file: ${{ matrix.tcl_file }}, build number: ${{ matrix.build_no }}"
+          sleep 10
