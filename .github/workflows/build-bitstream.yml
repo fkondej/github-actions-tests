@@ -39,6 +39,7 @@ jobs:
       - name: Generate matrix for build jobs
         id: set-matrix
         run: |
+          which -a pytest
           echo TCL_FILE_1=${TCL_FILE_1}
           echo BUILD_COUNT_1=${BUILD_COUNT_1}
           echo ${GITHUB_EVENT_NAME}
